@@ -1,0 +1,9 @@
+@echo off
+del disasm.exe
+del disasm.lst
+del disasm.map
+del disasm.map
+del disasm.obj
+del test.com
+del test.lst
+del test.obj
