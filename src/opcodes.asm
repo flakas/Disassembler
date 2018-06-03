@@ -1,4 +1,4 @@
-;Registrai
+;Registers
 s_AL db "AL", 0
 s_AH db "AH", 0
 s_BL db "BL", 0
@@ -26,7 +26,7 @@ s_001 db "BX+DI", 0
 s_010 db "BP+DI", 0
 s_011 db "BP+SI", 0
 
-;Mnemonikos
+;Instruction mnemonics
 m_MOV db "MOV", 0
 m_PUSH db "PUSH", 0
 m_POP db "POP", 0
@@ -42,7 +42,7 @@ m_RET db "RET", 0
 m_AND db "AND", 0
 m_OR db "OR", 0
 m_JMP db "JMP", 0
-; Salyginiai perdavimai
+; Conditional jumps
 m_JO db "JO", 0
 m_JNO db "JNO", 0
 m_JNAE db "JNAE", 0
@@ -59,7 +59,7 @@ m_JL db "JL", 0
 m_JGE db "JGE", 0
 m_JLE db "JLE", 0
 m_JG db "JG", 0
-; Salyginiu perdavimu pabaiga
+; Conditional jumps end
 m_LOOP db "LOOP", 0
 m_INT db "INT", 0
 

@@ -44,7 +44,7 @@ nelygu:
 	CMP	cx, 0
 	JG	ciklas1
 
-;****Spausdinimas****
+;****Printing****
 	MOV	dl, 10
 	DIV	dl
 	MOV	[rezult2 + 2], ah
@@ -59,14 +59,14 @@ nelygu:
 	MOV	ah, 9
 	MOV	dx, offset rezult
 	INT	21h
-	
-	
+
+
 
 	MOV	ah, 4Ch
 	MOV	al, 0
 	INT	21h
 
-;*******************Atkelta ið duomenø segmento*****************
+;*******************Moved from data segment*****************
 	bufDydis DB  buferioDydis
 	nuskaite DB  ?
 	buferis	 DB  buferioDydis dup ('$')
@@ -74,12 +74,12 @@ nelygu:
 	rezult	 DB  'Radau tiek didziuju raidziu: '
 	rezult2	 DB  3 dup (' ')
 	enteris	 DB  13, 10, '$'
-	
+
 	PUSH ES
 	qqqq     DB  0FFh, 0F7h, 69h
 ;***************************************************************
 
-;*******************Pridëta*************************************
+;*******************Added*************************************
 BSeg ENDS
 ;***************************************************************
-END	Pradzia		
+END	Pradzia

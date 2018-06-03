@@ -1,7 +1,7 @@
 LOCALS @@
 
 .MODEL SMALL
-bufferioDydis EQU 255 
+bufferioDydis EQU 255
 poslinkis EQU 0h
 .STACK 100h
 .DATA
@@ -78,26 +78,26 @@ Start:
     MOV ax, @data
     MOV ds, ax
     MOV cl, es:[80h]
-    MOV ch, 01h ;I tarpa nekreipsim demesio
+    MOV ch, 01h ;We will ignore spaces
     MOV bx, 82h
-    ;Ar yra parametru?
+    ;Are there any arguments?
     CMP ch, cl
     JGE Pagalba
-    ;Ar tai yra help parametras?
+    ;Is it the help argument?
     MOV dx, word ptr es:[bx]
     XCHG dl, dh
     CMP dx, "/?"
     JE tikrinti83
     JMP ruostiParamApdorojimui
 
-tikrinti83: ;Ar daugiau nieko neivesta ir tai yra /?/*{{{*/
+tikrinti83: ;Is only /? entered? /*{{{*/
     PUSH bx
     MOV bx, 84h
-    CMP byte ptr es:[bx], 0Dh;Carriage return irasomas
+    CMP byte ptr es:[bx], 0Dh ;Carriage return to be entered
     JE Pagalba
     POP bx
     JMP RuostiParamApdorojimui;/*}}}*/
-    
+
 Pagalba:;/*{{{*/
     MOV ah, 09h
     MOV dx, offset pagalbosTekstas
@@ -105,10 +105,10 @@ Pagalba:;/*{{{*/
     JMP Pabaiga;/*}}}*/
 
 RuostiParamApdorojimui:;/*{{{*/
-    MOV ax, 82h ;offset'as read'ui
+    MOV ax, 82h ;offset for reading
     MOV bx, offset fIn
     JMP ApdorotiParametrus;/*}}}*/
-    
+
 KeistiOut:;/*{{{*/
     MOV bx, offset fOut
     PUSH cx
@@ -120,7 +120,7 @@ KeistiOut:;/*{{{*/
 
 ApdorotiParametrus:;/*{{{*/
     CMP ch, cl
-    JGE arAbu 
+    JGE arAbu
     INC ch
     PUSH bx
     MOV bx, ax
@@ -137,7 +137,7 @@ KeistiSkaitliuka:;/*{{{*/
     JMP ApdorotiParametrus
 ;/*}}}*/
 arAbu:;/*{{{*/
-    MOV cl, paramReadStatus 
+    MOV cl, paramReadStatus
     CMP cl, 1h
     JNE Pagalba
     JMP AtidarytiFailus;/*}}}*/
@@ -209,7 +209,7 @@ DarytiPoslinki:;/*{{{*/
     MOV bx, hFin
     INT 21h
     JC KlaidaUzdarytiRasymas
-    ;Reikia klaidos handlerio
+    ;Error handler is needed
     JMP Skaityti;/*}}}*/
 
 Skaityti:
@@ -222,7 +222,7 @@ TestiSkaityma:
     JMP Skaityti
 
 Nuskaityti PROC;/*{{{*/
-    ;Nuskaito bufferioDydis baitu is duomenu failo
+    ;Reads "bufferioDydis" number of bytes from data file
     PUSH bx
     PUSH cx
     PUSH dx
@@ -252,7 +252,7 @@ Apdoroti PROC;/*{{{*/
 
         MOV segmentoPoslinkis, 00h
         CALL getBuffByte
-        ;Ar tai segmento keitimo prefiksas?
+        ;Is it segment changing prefix?
         CALL checkSegment
         CALL printIP
         CALL ieskotiOPK
@@ -264,7 +264,7 @@ Apdoroti PROC;/*{{{*/
         JMP @@aPabaiga
 
     @@Atpazinta:
-        ;Atpazinom, apdirbom, spausdinam parsintus baitus ir komandos teksta
+        ;Bytes have been recognized, processed and parsed. Can print the parsed bytes and command text
         CALL printParseBuffer
         MOV ch, 00h
         MOV cl, printBufferIndex
@@ -273,7 +273,7 @@ Apdoroti PROC;/*{{{*/
         JMP @@KitaKomanda
 
     @@Neatpazinta:
-        ;Neatpazinom, spausdinam parsinta baita ir teksta
+        ;Not recognized. Printing parsed byte and "Not recognized" message
         CALL printParseBuffer
         MOV cx, 0013h
         MOV dx, offset neatpazintasTekstas
@@ -282,12 +282,12 @@ Apdoroti PROC;/*{{{*/
 
     @@KitaKomanda:
         MOV segmentas, 0000h
-        ;Pridedam komandos poslinki prie IP
+        ;Adding instruction's offset to IP
         MOV bx, IPposl
         ADD bx, IPpoz
         MOV IPpoz, bx
         MOV IPposl, 00h
-        
+
         MOV cx, 0002h
         MOV dx, offset nl
         CALL printAscii
@@ -315,8 +315,8 @@ Apdoroti PROC;/*{{{*/
 Apdoroti ENDP;/*}}}*/
 
 checkSegment PROC;/*{{{*/
-    ;Patikrina ar tai yra segmento keitimo prefiksas
-    ;Jei taip - ji isspausdina ir settina atitinkamus kintamuosius
+    ;Checks if this is segment changing prefix
+    ;If yes - prints it out and sets appropriate variables
     PUSH ax
     PUSH bx
     PUSH cx
@@ -371,7 +371,7 @@ ieskotiOPK PROC;/*{{{*/
     PUSH dx
     MOV bx, offset parseBuffer
     PUSH dx
-    ;Pirmas gali but segmento keitimo prefiksas, pertvarkom
+    ;First may be segment changing prefix, reordering...
     MOV dl, parseBufferIndex
     SUB dl, 01h
     MOV dh, 00h
@@ -382,7 +382,7 @@ ieskotiOPK PROC;/*{{{*/
     @@tikrintiOpk:
         MOV al, [bx]
         XCHG bx, dx
-        CMP al, (OPKRow[bx]).fByte ;Ar tai musu opk?
+        CMP al, (OPKRow[bx]).fByte ;is this the right opcode?
         JE @@tikrintiReg
         XCHG bx, dx
         ADD dx, OPKRowSize
@@ -390,7 +390,7 @@ ieskotiOPK PROC;/*{{{*/
         JMP @@iopkPabaiga
 
     @@reikiaReg:
-      ;Ar reg yra OPKodo prapletimas?
+      ;Is reg an opcode extension?
       MOV ax, buffPoz
       PUSH dx
       MOV dx, offset readBuffer
@@ -405,7 +405,7 @@ ieskotiOPK PROC;/*{{{*/
       JMP @@neMusu
 
     @@neMusu:
-        ;Neatitinka reg laukas, ieskom kitos komandos
+        ;reg field does not match, looking for another command
         CMP cx, 0000h
         JE @@baigti
         ADD bx, OPKRowSize
@@ -627,7 +627,7 @@ arReikiaBaito PROC
 arReikiaBaito ENDP
 
 opkOpR_m8b PROC;/*{{{*/
-        ;Perkelem is pagrindines proceduros del jump nepasiekiamumo
+        ;Moved from main procedure due to it being unreachable for jumps
         MOV dx, offset kablelis
         CALL strlen
         CALL movePrintBuffer
@@ -637,7 +637,7 @@ opkOpR_m8b PROC;/*{{{*/
 opkOpR_m8b ENDP;/*}}}*/
 
 forceParseAddrByte PROC;/*{{{*/
-    ;Kad butume tikri
+    ;Just to make sure...
     MOV dx, offset parseBuffer
     MOV ax, 0001h
     ADD al, segmentoPoslinkis
@@ -647,7 +647,7 @@ forceParseAddrByte PROC;/*{{{*/
 forceParseAddrByte ENDP;/*}}}*/
 
 op1Reg PROC;/*{{{*/
-    ;Operandas - registras
+    ;Operand - register
    PUSH ax
    PUSH bx
    PUSH cx
@@ -683,7 +683,7 @@ op1Reg PROC;/*{{{*/
       MOV ch, 02h
 
    @@findReg:
-      ;Randam pagal poslinki lentelej
+      ;Find it based on offset in the table
       MOV al, cl
       MOV ah, regTableSize
       MUL ah
@@ -691,7 +691,7 @@ op1Reg PROC;/*{{{*/
       MOV bx, offset RegR_mTable
       ADD bx, ax
       MOV dx, [bx]
-      
+
       JMP @@radauReg
 
     @@darBaitas:
@@ -704,7 +704,7 @@ op1Reg PROC;/*{{{*/
       CMP reikiaBaito, 1h
       JE @@darBaitas
 
-    
+
     @@pabaiga:
    POP dx
    POP cx
@@ -731,7 +731,7 @@ getR_m PROC;/*{{{*/
    ;mod=11
    CMP opWord, 01h
    JE @@posl1
-   JMP @@loopint ;Nereikia poslinkio
+   JMP @@loopint ;No need for offset
 
    @@posl1:;wordas
       ADD bx, 0002h
@@ -743,19 +743,19 @@ getR_m PROC;/*{{{*/
       PUSH ax
       PUSH dx
       PUSH cx
-      ;Gali reiketi byte/word ptr
+      ;May need byte/word ptr
       CALL getPtrText
-      ;Gali reiketi segmento keitimo prefikso
+      ;May need segment changing prefix
       CALL getSegment
-      ;reikia lauztiniu skliaustu
+      ;Need angled brackets
       MOV dx, offset lskliausk
       CALL strlen
       CALL movePrintBuffer
       POP cx
       POP dx
-      ;Poslinkis lentelej
+      ;Offset within the table
       ADD bx, 0004h
-      ;Tiesioginis adresavimas?
+      ;Direct addressing?
       CMP abR_m, 06h
       JE @@tiesioginis
       JMP @@loopint
@@ -784,7 +784,7 @@ getR_m PROC;/*{{{*/
       JMP @@loopint
 
    @@loopint:
-        ;Randam pagal poslinki
+        ;Find based on offset
       MOV al, abR_m
       MOV ah, 00h
       MOV cx, RegTableSize
@@ -829,7 +829,7 @@ getR_m PROC;/*{{{*/
         MOV dx, offset pliusas
         CALL strlen
         CALL movePrintBuffer
-        
+
         MOV dx, offset parseBuffer
         MOV bh, 00h
         MOV bl, parseBufferIndex
@@ -847,7 +847,7 @@ getR_m PROC;/*{{{*/
         MOV dx, offset pliusas
         CALL strlen
         CALL movePrintBuffer
-        
+
         MOV dx, offset parseBuffer
         MOV bh, 00h
         MOV bl, parseBufferIndex
@@ -927,7 +927,7 @@ getPtrText PROC;/*{{{*/
 getPtrText ENDP;/*}}}*/
 
 getSegment PROC;/*{{{*/
-    ;Printinam segmento keitimo prefiksa
+    ;Prints prefix for segment change
     PUSH ax
     PUSH bx
     PUSH cx
@@ -949,7 +949,7 @@ getSegment PROC;/*{{{*/
 getSegment ENDP;/*}}}*/
 
 getReg PROC;/*{{{*/
-    ;Gauna registra, kai lentelej registras nurodytas
+    ;Gets register when one is specified in the table
    PUSH dx
    PUSH bx
    PUSH cx
@@ -959,7 +959,7 @@ getReg PROC;/*{{{*/
    MOV bx, offset RegR_mTable
    CMP opWord, 01h
    JE @@posl1
-   JMP @@loopint ;Nereikia poslinkio
+   JMP @@loopint ;No need for offset
 
    @@posl1:
       ADD bx, 0002h
@@ -974,7 +974,7 @@ getReg PROC;/*{{{*/
       MOV dx, [bx]
       CALL strlen
       CALL movePrintBuffer
-            
+
    @@Pabaiga:
       POP ax
       POP cx
@@ -984,7 +984,7 @@ getReg PROC;/*{{{*/
 getReg ENDP;/*}}}*/
 
 getBetOp PROC;/*{{{*/
-    ;Gauna betarpiska 1B/2B operanda
+    ;Gets direct 1B/2B operand
     PUSH ax
     PUSH bx
     PUSH cx
@@ -996,7 +996,7 @@ getBetOp PROC;/*{{{*/
     @@wordas:
       CALL getBuffByte
       CALL getBuffByte
-      
+
 
     @@testiWorda:
       MOV dx, offset parseBuffer
@@ -1025,7 +1025,7 @@ getBetOp PROC;/*{{{*/
 
 
     @@pridetiIP:
-        ;Kadangi galim naudot gaut poslinkiui, ar pridet IP?
+        ;If we can use it to get the offset, should we add IP?
         MOV bx, dx
         MOV di, offset jmpIP
         MOV cx, 0000h
@@ -1068,7 +1068,7 @@ getBetOp PROC;/*{{{*/
 getBetOp ENDP;/*}}}*/
 
 addSegmentAddr PROC;/*{{{*/
-    ;Ar tai 4B adresas (2B segmentas, 2B adresas)?
+    ;Is it a 4 byte address (2B for segment, 2 for address)?
     PUSH ax
     PUSH bx
     PUSH cx
@@ -1078,7 +1078,7 @@ addSegmentAddr PROC;/*{{{*/
     JNE @@Pabaiga
     CMP (OPKRow[bx]).op2, OpBet16b
     JNE @@Pabaiga
-    ;Turim 2 16b betarpiskus, turetu but segmento adresas
+    ;We have two 16b direct ones, here should be a segment address
     CALL getBuffByte
     CALL getBuffByte
     MOV dx, offset parseBuffer
@@ -1116,7 +1116,7 @@ addSegmentAddr PROC;/*{{{*/
 addSegmentAddr ENDP;/*}}}*/
 
 getMemOp PROC;/*{{{*/
-    ;Kai operandas yra OpMem
+    ;When operand is OpMem
     PUSH ax
     PUSH bx
     PUSH cx
@@ -1250,7 +1250,7 @@ getBuffByte PROC;/*{{{*/
     CMP readBytes, bx
     JE @@priskaityti
     JMP @@testi
-    
+
     @@priskaityti:
         CALL Nuskaityti
         CMP ax, 0000h
@@ -1261,7 +1261,7 @@ getBuffByte PROC;/*{{{*/
 
     @@baigti:
         JMP Pabaiga
-        
+
     @@testi:
         MOV ah, 00h
         MOV al, [offset readBuffer + bx]
